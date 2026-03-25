@@ -1,0 +1,72 @@
+using Microsoft.AspNetCore.Mvc;
+using TestAPI.DB.DTOs;
+using TestAPI.DB.Entities;
+using TestAPI.Services;
+namespace TestAPI.Controllers
+{
+
+    [ApiController]
+    [Route("api/controller")]
+    public class TestApiController : ControllerBase
+    {
+
+        private readonly ProductService _service;
+        public TestApiController(ProductService productservice)
+        {
+            _service = productservice;
+        }
+
+        [HttpGet("GetProduct")]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var response = await _service.GetAllAsync();
+            return Ok(response);
+        }
+
+
+        [HttpGet("GetProductBy{Id}")]
+
+        public async Task<IActionResult> GetByIdAsync(int Id)
+        {
+            var response = await _service.GetById(Id);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return Ok(response);
+            }
+        }
+
+        [HttpPost]
+
+        public async Task<IActionResult> CreateAsync([FromBody] RequestDto request)
+        {
+            var product = await _service.CreateAsync(request);
+
+            return Ok(product);
+        }
+
+        [HttpPut("ChangeProductBy{Id}")]
+
+        public async Task<IActionResult> UpdateAsync(int Id, RequestDto request)
+        {
+            var product = await _service.UpdateAsync(Id, request);
+
+            return Ok(product);
+        }
+
+        [HttpDelete("DeleteProductBy{id}")]
+
+        public async Task<IActionResult> DeleteAsync(int Id)
+        {
+            var delete = await _service.DeleteAsync(Id);
+            return (delete);
+        }
+
+            
+
+    }
+}
