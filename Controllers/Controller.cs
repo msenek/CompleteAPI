@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestAPI.DB.DTOs;
 using TestAPI.DB.Entities;
@@ -39,16 +40,15 @@ namespace TestAPI.Controllers
                 return Ok(response);
             }
         }
-
+        [Authorize]
         [HttpPost]
-
         public async Task<IActionResult> CreateAsync([FromBody] RequestDto request)
         {
             var product = await _service.CreateAsync(request);
 
             return Ok(product);
         }
-
+        [Authorize]
         [HttpPut("ChangeProductBy{Id}")]
 
         public async Task<IActionResult> UpdateAsync(int Id, RequestDto request)
@@ -58,15 +58,14 @@ namespace TestAPI.Controllers
             return Ok(product);
         }
 
+        [Authorize]
         [HttpDelete("DeleteProductBy{id}")]
 
         public async Task<IActionResult> DeleteAsync(int Id)
         {
             var delete = await _service.DeleteAsync(Id);
-            return (delete);
+            return Ok();
         }
-
-            
 
     }
 }
