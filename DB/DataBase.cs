@@ -8,6 +8,7 @@ namespace TestAPI.DB
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<User> User { get; set; }
+        public DbSet<RefreshToken> RefreshToken { get; set; }
 
         public TestAPIContext(DbContextOptions<TestAPIContext> options) : base(options)
         {

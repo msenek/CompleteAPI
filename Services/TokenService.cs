@@ -22,8 +22,9 @@ namespace TestAPI.Services
             {
                new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+               new Claim(ClaimTypes.Role, user.Role),
             };
-
+             
             var expiration = TimeSpan.FromHours(3);
 
             var token = GenerateJwtToken(secretKey, claims, expiration);

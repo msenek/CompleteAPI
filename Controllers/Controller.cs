@@ -40,7 +40,7 @@ namespace TestAPI.Controllers
                 return Ok(response);
             }
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] RequestDto request)
         {
@@ -48,7 +48,7 @@ namespace TestAPI.Controllers
 
             return Ok(product);
         }
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut("ChangeProductBy{Id}")]
 
         public async Task<IActionResult> UpdateAsync(int Id, RequestDto request)
@@ -58,7 +58,8 @@ namespace TestAPI.Controllers
             return Ok(product);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
+
         [HttpDelete("DeleteProductBy{id}")]
 
         public async Task<IActionResult> DeleteAsync(int Id)

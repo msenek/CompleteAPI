@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TestAPI.DB.DTOs;
+using TestAPI.DB.Entities;
 using TestAPI.Services;
 
 namespace TestAPI.Controllers
@@ -27,6 +28,13 @@ namespace TestAPI.Controllers
         public async Task<IActionResult> LoginAsync(UserRequestDto dto)
         {
             var response = await _authservice.LoginAsync(dto);
+            return Ok(response);
+        }
+
+        [HttpPost("Refresh")]
+        public async Task<IActionResult> RefreshAsync(RefreshToken token)
+        {
+            var response = await _authservice.RefreshAsync(token);
             return Ok(response);
         }
     }
