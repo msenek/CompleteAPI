@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TestAPI.DB.DTOs;
 using TestAPI.DB.Entities;
 using TestAPI.Services;
@@ -17,6 +18,7 @@ namespace TestAPI.Controllers
             _service = productservice;
         }
 
+        [EnableRateLimiting("generalPolicy")]
         [HttpGet("GetProduct")]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -24,7 +26,7 @@ namespace TestAPI.Controllers
             return Ok(response);
         }
 
-
+        [EnableRateLimiting("generalPolicy")]
         [HttpGet("GetProductBy{Id}")]
 
         public async Task<IActionResult> GetByIdAsync(int Id)
@@ -40,6 +42,7 @@ namespace TestAPI.Controllers
                 return Ok(response);
             }
         }
+        [EnableRateLimiting("generalPolicy")]
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] RequestDto request)
@@ -48,6 +51,8 @@ namespace TestAPI.Controllers
 
             return Ok(product);
         }
+
+        [EnableRateLimiting("generalPolicy")]
         [Authorize(Roles = "Admin")]
         [HttpPut("ChangeProductBy{Id}")]
 
@@ -58,8 +63,8 @@ namespace TestAPI.Controllers
             return Ok(product);
         }
 
+        [EnableRateLimiting("generalPolicy")]
         [Authorize(Roles = "Admin")]
-
         [HttpDelete("DeleteProductBy{id}")]
 
         public async Task<IActionResult> DeleteAsync(int Id)

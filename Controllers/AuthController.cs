@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using TestAPI.DB.DTOs;
 using TestAPI.DB.Entities;
 using TestAPI.Services;
@@ -16,6 +17,7 @@ namespace TestAPI.Controllers
             _authservice = Authservice;
         }
 
+        [EnableRateLimiting("loginPolicy")]
         [HttpPost("register")]
         public async Task<IActionResult> RegisterAsync(UserRequestDto dto)
         {
@@ -23,7 +25,7 @@ namespace TestAPI.Controllers
             return Ok(response);
         }
 
-
+        [EnableRateLimiting("loginPolicy")]
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync(UserRequestDto dto)
         {
@@ -31,6 +33,7 @@ namespace TestAPI.Controllers
             return Ok(response);
         }
 
+        [EnableRateLimiting("loginPolicy")]
         [HttpPost("Refresh")]
         public async Task<IActionResult> RefreshAsync(RefreshToken token)
         {

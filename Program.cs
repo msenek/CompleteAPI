@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using NSwag;
 using NSwag.Generation.Processors.Security;
+using TestAPI.Middleware;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,30 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("loginPolicy", context =>
+    RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknow",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5,
+            Window = TimeSpan.FromMinutes(1),
+            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+            QueueLimit = 0
+        }));
+
+    options.AddPolicy("generalPolicy", context =>
+    RateLimitPartition.GetFixedWindowLimiter(
+        partitionKey: context.Connection.RemoteIpAddress.ToString() ?? "unknow",
+        factory: _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 50,
+            Window = TimeSpan.FromMinutes(1),
+        }));
+});
+
+
 // CORS
 builder.Services.AddCors(option =>
 {
@@ -83,6 +109,9 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthRepository>();
 builder.Services.AddScoped<ProductRepository>();
 
+// MiddlewAare 
+builder.Services.AddScoped<ExceptionMiddleware>();
+
 var app = builder.Build();
 
 // Pipeline
@@ -97,6 +126,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("NuevaPolitica");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

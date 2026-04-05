@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using TestAPI.DB.DTOs;
 using TestAPI.DB.Entities;
+using TestAPI.Middleware;
+using TestAPI.Middleware.Exceptions;
 using TestAPI.Repository;
 namespace TestAPI.Services
 {
@@ -19,11 +21,13 @@ namespace TestAPI.Services
 
         public async Task<User> RegisterAsync(UserRequestDto dto)
         {
+            dto.Email = dto.Email.Trim().ToLower();
+            dto.UserName = dto.UserName.Trim();
             var hash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             var existingUser = await _repository.GetUserByEmail(dto.Email);
             if (existingUser != null)
             {
-                throw new Exception("Email already Exists");
+                throw new ForbiddenException("Email already Exists");
             }
             else
             {
@@ -40,17 +44,19 @@ namespace TestAPI.Services
         }
         public async Task<string> LoginAsync(UserRequestDto dto)
         {
+            dto.Email = dto.Email.Trim().ToLower();
+            dto.UserName = dto.UserName.Trim();
             var user = await _repository.GetUserByEmail(dto.Email);
             var isValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.Password);
 
             if (user == null)
                {
-               throw new Exception("NotFound");
+                throw new NotFoundException("Not Found");
                }
 
                else if (!isValid)
                {
-                throw new Exception("BadRequest");
+                throw new BadRequestException("BadRequest");
                } 
                
                 var token = _token.CreateToken(user);
@@ -78,14 +84,14 @@ namespace TestAPI.Services
 
             if (token == null)
             {
-                throw new Exception("Login is required");
+                throw new UnauthorizedException("Login is required");
             }
 
             if (token.Expiration < DateTime.UtcNow || token.IsRevoken == true)
             {
                 token.IsRevoken = true;
                 await _repository.UpdateRefreshTokenAsync(token);
-                throw new Exception("Login is required, the token expired");
+                throw new UnauthorizedException("Login is required, the token expired");
             }
 
             token.IsRevoken = true;

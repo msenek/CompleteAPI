@@ -8,6 +8,7 @@ using TestAPI.DB;
 using TestAPI.DB.DTOs;
 using TestAPI.DB.Entities;
 using TestAPI.Repository;
+using TestAPI.Middleware;
 
 namespace TestAPI.Services
 {
@@ -50,7 +51,7 @@ namespace TestAPI.Services
 
             if (product == null)
             {
-                return null; // manejar con middleware mas adelante
+                throw new NotFoundException("Not Found");
             }
             else
             {
@@ -67,6 +68,7 @@ namespace TestAPI.Services
 
         // post
         public async Task<ResponseDto> CreateAsync(RequestDto request)
+
         {
             var newproduct = new Product()
             {
@@ -96,7 +98,7 @@ namespace TestAPI.Services
             var product = await _repository.GetById(Id);
             if (product == null)
             {
-                return null; // manejar con middleware mas adelante
+                throw new NotFoundException("Not Found");
             }
             else
             {
