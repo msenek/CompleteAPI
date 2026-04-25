@@ -9,46 +9,73 @@ using TestAPI.DB.DTOs;
 using TestAPI.DB.Entities;
 using TestAPI.Repository;
 using TestAPI.Middleware;
+using TestAPI.Middleware.Exceptions;
+
 
 namespace TestAPI.Services
 {
     public class ProductService
     {
         private readonly ProductRepository _repository;
-        public ProductService(ProductRepository productrepository)
+        private readonly CacheService _cache;
+        public ProductService(ProductRepository productrepository, CacheService cache)
         {
             _repository = productrepository;
+            _cache = cache;
         }
 
         // ⅁ET
-        public async Task<List<ResponseDto>> GetAllAsync()
+        public async Task<List<ResponseDto>> GetAllAsync(int page, int pageSize, FilteringDto filtering)
         {
-            var products = await _repository.GetAllAsync();
+            if (page <= 0)
+            {
+                page = 1;
+            }
+            if (pageSize <= 0)
+            {
+                pageSize = 10;
+            }
+            if (pageSize > 50)
+            {
+                throw new BadRequestException("PageSize cannot be greater than 50");
+            }
+
+            var key = $"Product:Page={page}:PageSize={pageSize}:Name={filtering.Name}:MinPrice={filtering.MinPrice}:MaxPrice={filtering.MaxPrice}";
+
+            var cached = await _cache.GetAsync<List<ResponseDto>>(key);
+
+            if (cached != null) return cached;
+
+            var products = await _repository.GetAllAsync(page, pageSize, filtering);
 
             var productResponse = new List<ResponseDto>();
-
             foreach (var product in products)
             {
-                var Response = new ResponseDto();
-
-                Response.Id = product.Id;
-                Response.Name = product.Name;
-                Response.Description = product.Description;
-                Response.Price = product.Price;
-
-                productResponse.Add(Response);
-
-
+                var response = new ResponseDto();
+                response.Id = product.Id;
+                response.Name = product.Name;
+                response.Description = product.Description;
+                response.Price = product.Price;
+                productResponse.Add(response);
             }
-            return (productResponse);
+
+            await _cache.SetAsync(productResponse, key, TimeSpan.FromMinutes(10));
+
+            return productResponse;
         }
 
         // ⅁ET by 🅸d
 
         public async Task<ResponseDto?> GetById(int Id)
         {
+            var key = $"Product:{Id}";
+            var cached = await _cache.GetAsync<ResponseDto>(key);
+            if (cached != null)
+            {
+                return cached;
+            }
+            
             var product = await _repository.GetById(Id);
-
             if (product == null)
             {
                 throw new NotFoundException("Not Found");
@@ -61,6 +88,12 @@ namespace TestAPI.Services
                 response.Name = product.Name;
                 response.Description = product.Description;
                 response.Price = product.Price;
+            
+
+            await _cache.SetAsync(product, key, TimeSpan.FromMinutes(10));
+
+
+            
 
                 return response;
             } 
@@ -95,6 +128,9 @@ namespace TestAPI.Services
 
         public async Task<ResponseDto> UpdateAsync(int Id, RequestDto request)
         {
+            var key = $"Product:{Id}";
+            await _cache.RemoveAsync(key);
+
             var product = await _repository.GetById(Id);
             if (product == null)
             {
@@ -127,6 +163,9 @@ namespace TestAPI.Services
 
         public async Task<bool> DeleteAsync(int Id)
         {
+            var key = $"Product:{Id}";
+            await _cache.RemoveAsync(key);
+
             var delete = await _repository.DeleteAsync(Id);
             return (delete);
         }

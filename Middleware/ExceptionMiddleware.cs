@@ -33,7 +33,7 @@ namespace TestAPI.Middleware
             }
 
             context.Response.StatusCode = statusCode;
-            context.Response.ContentType = "apllication/json";
+            context.Response.ContentType = "application/json";
 
             return context.Response.WriteAsJsonAsync(new
             {

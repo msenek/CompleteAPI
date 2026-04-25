@@ -109,8 +109,13 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthRepository>();
 builder.Services.AddScoped<ProductRepository>();
 
-// MiddlewAare 
-builder.Services.AddScoped<ExceptionMiddleware>();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6164";
+    options.InstanceName = "ProductAPI";
+}); 
+
+
 
 var app = builder.Build();
 
@@ -123,7 +128,7 @@ if (app.Environment.IsDevelopment())
         c.Path = "";
     });
 }
-
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseHttpsRedirection();
 app.UseCors("NuevaPolitica");
 app.UseRateLimiter();

@@ -3,6 +3,7 @@ using TestAPI.DB.Entities;
 using TestAPI.DB.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Linq;
 namespace TestAPI.Repository
 {
     public class ProductRepository
@@ -14,10 +15,21 @@ namespace TestAPI.Repository
         }
 
         // ⅁ET
-        public async Task<List<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync(int page, int pageSize, FilteringDto filtering)
         {
-            var product = await _context.Products.ToListAsync();
-            return(product);
+            var query = _context.Products.AsQueryable();
+
+            if (filtering.Name != null)
+                query = query.Where(p => p.Name.Contains(filtering.Name));
+
+            if (filtering.MinPrice != null)
+                query = query.Where(p => p.Price >= filtering.MinPrice);
+
+            if (filtering.MaxPrice != null)
+                query = query.Where(p => p.Price <= filtering.MaxPrice);
+
+            var skip = (page - 1) * pageSize;
+            return await query.Skip(skip).Take(page).ToListAsync();
         }
 
 

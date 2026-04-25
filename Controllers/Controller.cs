@@ -8,7 +8,7 @@ namespace TestAPI.Controllers
 {
 
     [ApiController]
-    [Route("api/controller")]
+    [Route("api/[controller]")]
     public class TestApiController : ControllerBase
     {
 
@@ -20,9 +20,9 @@ namespace TestAPI.Controllers
 
         [EnableRateLimiting("generalPolicy")]
         [HttpGet("GetProduct")]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(int page, int pageSize, [FromQuery] FilteringDto filtering)
         {
-            var response = await _service.GetAllAsync();
+            var response = await _service.GetAllAsync(page, pageSize, filtering);
             return Ok(response);
         }
 
