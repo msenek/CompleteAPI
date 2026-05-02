@@ -7,13 +7,15 @@ using TestAPI.DB.Entities;
 using TestAPI.Middleware;
 using TestAPI.Middleware.Exceptions;
 using TestAPI.Repository;
+using TestAPI.Repository.Interface;
+using TestAPI.Services.Interface;
 namespace TestAPI.Services
 {
     public class AuthService
     {
-        private readonly AuthRepository _repository;
-        private readonly TokenService _token;
-        public AuthService(AuthRepository authrepository, TokenService token)
+        private readonly IAuthRepository _repository;
+        private readonly ITokenService _token;
+        public AuthService(IAuthRepository authrepository, ITokenService token)
         {
             _repository = authrepository;
             _token = token;

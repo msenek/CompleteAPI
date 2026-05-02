@@ -7,18 +7,18 @@ using System.Security.Cryptography.X509Certificates;
 using TestAPI.DB;
 using TestAPI.DB.DTOs;
 using TestAPI.DB.Entities;
-using TestAPI.Repository;
+using TestAPI.Repository.Interface;
 using TestAPI.Middleware;
 using TestAPI.Middleware.Exceptions;
-
+using TestAPI.Services.Interface;
 
 namespace TestAPI.Services
 {
-    public class ProductService
+    public class ProductService 
     {
-        private readonly ProductRepository _repository;
-        private readonly CacheService _cache;
-        public ProductService(ProductRepository productrepository, CacheService cache)
+        private readonly IProductRepository _repository;
+        private readonly ICacheService _cache;
+        public ProductService(IProductRepository productrepository, ICacheService cache)
         {
             _repository = productrepository;
             _cache = cache;

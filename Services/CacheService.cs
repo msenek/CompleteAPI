@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
+using TestAPI.Services.Interface;
 
 namespace TestAPI.Services
 {
-    public class CacheService
+    public class CacheService : ICacheService
     {
         private readonly IDistributedCache _cache;
         public CacheService(IDistributedCache cache)

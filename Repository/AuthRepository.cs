@@ -4,10 +4,11 @@ using TestAPI.DB.Entities;
 using TestAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using TestAPI.Repository.Interface;
 namespace TestAPI.Repository
 
 {
-    public class AuthRepository
+    public class AuthRepository : IAuthRepository
     {
         private readonly TestAPIContext _context;
         public AuthRepository(TestAPIContext authcontext)

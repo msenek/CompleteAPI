@@ -5,11 +5,12 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using TestAPI.DB.Entities;
+using TestAPI.Services.Interface;
 
 
 namespace TestAPI.Services
 {
-    public class TokenService
+    public class TokenService : ITokenService 
     {
 
         public string CreateToken(User user)

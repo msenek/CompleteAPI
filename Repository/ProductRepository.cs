@@ -4,11 +4,13 @@ using TestAPI.DB.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Linq;
+using TestAPI.Middleware;
+using TestAPI.Repository.Interface;
 namespace TestAPI.Repository
 {
-    public class ProductRepository
+    public class ProductRepository : IProductRepository
     {
-        public TestAPIContext _context;
+    public TestAPIContext _context;
         public ProductRepository(TestAPIContext productcontext)
         {
             _context = productcontext;
@@ -69,7 +71,7 @@ namespace TestAPI.Repository
             var product = await _context.Products.FindAsync(Id);
             if (product == null)
             {
-                return false; // manejar con midleware 
+                throw new NotFoundException("Product not found");
             }
             else {
             var delete = _context.Products.Remove(product);
