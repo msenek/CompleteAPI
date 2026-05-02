@@ -1,5 +1,4 @@
 name: CI
-
 on:
   push:
     branches: [ master ]
@@ -9,20 +8,19 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '10.0.x'
+        dotnet-version: '8.0.x'
 
     - name: Restore
-      run: dotnet restore TestAPI/TestAPI.slnx
+      run: dotnet restore TestAPI.slnx
 
     - name: Build
-      run: dotnet build TestAPI/TestAPI.slnx --no-restore
+      run: dotnet build TestAPI.slnx --no-restore
 
     - name: Test
-      run: dotnet test TestAPI/TestAPI.slnx --no-build
+      run: dotnet test TestAPI.slnx --no-build
