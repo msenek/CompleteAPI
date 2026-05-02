@@ -19,10 +19,10 @@ jobs:
         dotnet-version: '10.0.x'
 
     - name: Restore
-      run: dotnet restore TestAPI/TestAPI.sln
+      run: dotnet restore TestAPI/TestAPI.slnx
 
     - name: Build
-      run: dotnet build TestAPI/TestAPI.sln --no-restore
+      run: dotnet build TestAPI/TestAPI.slnx --no-restore
 
     - name: Test
-      run: dotnet test TestAPI/TestAPI.sln --no-build
+      run: dotnet test TestAPI/TestAPI.slnx --no-build
